@@ -1,6 +1,7 @@
 var mysql = require('mysql');
 var interval = 1000;
 var interval2 = 5000;
+var interval3 = 600000;
 var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -10,6 +11,7 @@ var con = mysql.createConnection({
 
 update();
 updatePerSecond();
+updateThird();
 
 function update() {
     con.connect(function(err) {
@@ -58,4 +60,44 @@ function updatePerSecond() {
         });
     });
     setTimeout(updatePerSecond, interval2);
+}
+
+function updateThird() {
+
+
+
+    con.connect(function(err) {
+        sql="select id from users;";
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            result.forEach(function (entry) {
+                var def = getRandom();
+                // console.log(entry["id"]);
+                sql2="update users set defence="+def+" where id ="+entry["id"]+" ;";
+                con.query(sql2, function (err, results) {
+                    if (err) throw err;
+                    console.log("updated defence for "+entry["id"]);
+                });
+            });
+        });
+
+
+        // sql="update users set defence="+def+" id ="+id+" ;";
+        // con.query(sql, function (err, result) {
+        //     if (err) throw err;
+        //     console.log("updated miner1");
+        // });
+
+    });
+    setTimeout(updateThird, interval3);
+}
+
+    function getRandom(){
+    var def=[];
+    for(var x=0;x<5;x++){
+        // (maximum - minimum + 1)) + minimum
+        def[x]=Math.floor(Math.random() * 3)+1;
+    }
+        var defence = def.join("");
+    return defence;
 }

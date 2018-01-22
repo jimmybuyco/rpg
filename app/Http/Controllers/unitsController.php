@@ -97,7 +97,7 @@ public  function collect(){
     $type_qty = $units->$type;
 
 
-$this->gainXp($qty,$user);
+//$this->gainXp($qty,$user);
    $unitModel->updateType($typeOfMiner, 0, $user);
    $unitModel->updateType($type, $type_qty + $qty, $user);
 }

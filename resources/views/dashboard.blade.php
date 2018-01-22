@@ -1,0 +1,1 @@
+welcome <?php echo Auth::user()->name ?>

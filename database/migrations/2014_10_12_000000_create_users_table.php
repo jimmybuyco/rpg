@@ -108,7 +108,7 @@ class CreateUsersTable extends Migration
         $unitsModel->save();
 
         $unitsModel = new \App\User();
-        $unitsModel->name = "neil";
+        $unitsModel->name = "mark";
         $unitsModel->password = "asdf";
         $unitsModel->defence  = $this->getRandom();
         $unitsModel->coin = $coins;
