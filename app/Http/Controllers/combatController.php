@@ -39,7 +39,7 @@ class combatController extends Controller
                 if($splitAtk[$x]==1 && $splitDef[$x]==2)
                     $atk_dmg++;
 
-                print_r("atk:".$splitAtk[$x].",def:".$splitDef[$x]      .  ",attaker:".$atk_dmg.",defender:".$def_dmg);
+//                print_r("atk:".$splitAtk[$x].",def:".$splitDef[$x]      .  ",attaker:".$atk_dmg.",defender:".$def_dmg);
                 if($splitAtk[$x]==2 && $splitDef[$x]==3)
                     $atk_dmg++;
                 if($splitAtk[$x]==3 && $splitDef[$x]==1)
@@ -55,12 +55,17 @@ class combatController extends Controller
             $this->gainXp($atk_dmg*5,$user);
             $this->gainXp($def_dmg*5,$def);
 
-
+            $message = "You deal ".$atk_dmg." damage to ".$defender->name.". ".$defender->name." deals ".$def_dmg." to you.";
 
             $unitModel->updateType('hp', ($defender->hp-$atk_dmg)<1?0:$defender->hp-$atk_dmg, $def);
             $unitModel->updateType('hp', ($attacker->hp-$def_dmg)<1?0:($attacker->hp-$def_dmg), $user);
             $unitModel->updateType('sp', $attacker->sp-1, $user);
 
+            $data = array(
+
+                'message' => $message,
+            );
+            return $data;
         }
 
 

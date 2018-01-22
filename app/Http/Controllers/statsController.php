@@ -16,8 +16,8 @@ class statsController extends Controller
     public function getStats()
     {
 
-//        $user=Auth::user()->id;
-        $user=\Illuminate\Support\Facades\Input::get("user");
+        $user=Auth::user()->id;
+//        $user=\Illuminate\Support\Facades\Input::get("user");
         $unitModel = new User();
         $units = new unitsController();
         //$miners = $unitModel->geMinersCount($user);

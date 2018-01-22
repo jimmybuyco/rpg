@@ -28,5 +28,6 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('login','loginController@login');
+Route::post('doLogin','loginController@doLogin');
 Route::get('error','loginController@error');
 

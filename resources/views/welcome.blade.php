@@ -11,7 +11,7 @@
             <table border="1">
                 <tr>
                     <td>User Id</td>
-                    <td><input type="text" id="user" value="1"></td>
+                    <td><input type="text" id="user" ></td>
                 </tr>
                 <tr><td>Name</td><td><span id="name"></span></td></tr>
                 <tr><td>Level</td><td><span id="lv"></span></td></tr>
@@ -151,7 +151,7 @@
         <td>Potion</td>
         <td>+20 HP</td>
 
-        <td>200 coins. 100 Woods. 300 Grass</td>
+        <td>100 coins. 30 Woods. 30 Grass</td>
         <td><input type="button" value="BUY" onclick="useItem('potion')"></td>
     </tr>
 </table>
@@ -210,6 +210,7 @@ overflow: scroll;
                 $("#name").text(data['name']);
                 $("#hp").text(data['hp']);
                 $("#sp").text(data['sp']);
+                $("#user").val(data['id']);
                 if(data['sp_ctr']>0)
                 $("#sp_ctr").text(": Recharge in "+data['sp_ctr']+" sec/s");
                 else
@@ -434,6 +435,12 @@ async: false,
 
             success: function (data) {
 //                update();
+var options = {
+                    weekday: "long", year: "numeric", month: "short",
+                    day: "numeric", hour: "2-digit", minute: "2-digit"
+                };
+                var d = new Date();
+            $("#message").html(d.toLocaleTimeString("en-us", options) + ": "+data['message'] + "<br>"+$("#message").html());
             },
             error: function () {
 

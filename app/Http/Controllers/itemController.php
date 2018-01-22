@@ -25,11 +25,11 @@ class itemController extends Controller
 
         switch($type) {
             case "potion":
-                if ($user_units->coin >= 200 && $user_units->wood >= 100 && $user_units->grass >= 300) {
+                if ($user_units->coin >= 100 && $user_units->wood >= 30 && $user_units->grass >= 30) {
                     $unitModel->updateType('hp', ($user_units->hp + 20) > 100 ? 100 : $user_units->hp + 20, $user);
-                    $unitModel->updateType('coin', $user_units->coin - 200, $user);
-                    $unitModel->updateType('wood', $user_units->wood - 100, $user);
-                    $unitModel->updateType('grass', $user_units->grass - 300, $user);
+                    $unitModel->updateType('coin', $user_units->coin - 100, $user);
+                    $unitModel->updateType('wood', $user_units->wood - 30, $user);
+                    $unitModel->updateType('grass', $user_units->grass - 30, $user);
                 }
 
 
