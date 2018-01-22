@@ -12,15 +12,19 @@ use Illuminate\Support\Facades\Auth;
 | and give it the controller to call when that URI is requested.
 |
 */
-Route::group(['middleware' => 'guest'], function() {
+//Route::group(['middleware' => 'guest'], function() {
     Route::get('/', 'loginController@welcome');
     Route::get('stats','statsController@getStats');
     Route::get('mine','unitsController@mine');
+    Route::get('gather','unitsController@gather');
+    Route::get('collect','unitsController@collect');
     Route::get('buy','unitsController@buy');
     Route::get('sell','unitsController@sell');
     Route::get('levelUp','unitsController@levelUp');
     Route::get('attack','combatController@attack');
-});
+    Route::get('useItem','itemController@useItem');
+
+//});
 
 
 Route::get('login','loginController@login');

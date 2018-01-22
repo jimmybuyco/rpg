@@ -37,9 +37,9 @@ class User extends Authenticatable
         return $mining;
     }
 
-    public function getRanking(){
+    public function getRanking($user){
 
-        $results = DB::table('users')->orderBy('coins','desc')->get();
+        $results = DB::table('users')->orderBy('xp','desc')->get();
         return $results;
     }
 
@@ -66,7 +66,7 @@ class User extends Authenticatable
     public function getCurrentCoins($user){
 
         $results = DB::table('users')->where('id', $user)->first();
-        return $results->coins;
+        return $results->coin;
     }
 
     public function getCurrentRocks($user){
@@ -77,14 +77,24 @@ class User extends Authenticatable
 
 
 
-    public function mining($user){
+//    public function mining($user){
+//
+//        DB::table('users')->where('id', $user)->update(['miner'=> 30]);
+//
+//    }
 
-        DB::table('users')->where('id', $user)->update(['miner'=> 30]);
+    public function gather($type,$user)
+    {
 
+        DB::table('users')->where('id', $user)->update([$type => 3600]);
     }
 
-    public function resetMining($user){
-        DB::table('users')->where('id', $user)->update(['miner'=> -2]);
+
+
+
+
+    public function resetGather($type,$user){
+        DB::table('users')->where('id', $user)->update([$type=> -2]);
     }
 
 

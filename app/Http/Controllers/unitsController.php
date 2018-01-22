@@ -15,21 +15,25 @@ use App\constant;
 class unitsController extends Controller
 {
 
-    protected  $rocks;
-    protected  $golds;
+    protected $rock;
+    protected $wood;
+    protected $grass;
+    protected $gold;
 
     public function __construct()
     {
-      $constant = new constant();
-        $this->rocks =  $constant->rocks;
-        $this->golds =  $constant->golds;
+        $constant = new constant();
+        $this->rock = $constant->rock;
+        $this->wood = $constant->wood;
+        $this->grass = $constant->grass;
+        $this->gold = $constant->gold;
     }
 
     public function updateCoins($miner, $coins, $user)
     {
         $unitsModel = new User();
         $coins++;
-        $unitsModel->updateType('coins',$coins, $user);
+        $unitsModel->updateType('coins', $coins, $user);
 
         return $coins;
     }
@@ -40,39 +44,68 @@ class unitsController extends Controller
         $type = \Illuminate\Support\Facades\Input::get("type");
         $unitsModel = new User();
         $units = $unitsModel->getUnits($user);
-        $stats = $units->$type;
-        $rocks = $units->rocks;
-        $golds = $units->golds;
-        $req_rock = ($stats%10)*20;
-        $req_gold =floor(($stats/10)*2);
+        $minerLevel = $units->$type/10;
+
+        $req_coin = $minerLevel*1000;
 
 
-        if($rocks>=$req_rock && $golds>=$req_gold){
-            $unitsModel->updateType('rocks',$rocks - $req_rock, $user);
-            $unitsModel->updateType('golds',$golds-$req_gold, $user);
-            $stats++;
-            $unitsModel->updateType($type,$stats, $user);
+        if($units->coin >= $req_coin){
+            $unitsModel->updateType('coin',$units->coin - $req_coin, $user);
+            $unitsModel->updateType($type,$units->$type+10, $user);
         }
 
 
         //return $coins;
     }
 
-    public function getMineRewards($user)
-    {
+//    public function getMineRewards($type, $user)
+//    {
+//        $unitModel = new User();
+//        $units = $unitModel->getUnits($user);
+//        $curr = $units->$type;
+//        $gold = $units->gold;
+//        $chance = rand(1, 100) / 100;
+//        $this->gainXp($user);
+//        $reward_Item = $this->$type * $chance;
+//        $reward_golds = $this->gold * $chance;
+//        $unitModel->updateType($type, floor($reward_Item) + $curr, $user);
+//        $unitModel->updateType('gold', floor($reward_golds) + $gold, $user);
+//        if ($type == "rock")
+//            $typeOfMiner = "miner1";
+//        if ($type == "wood")
+//            $typeOfMiner = "miner2";
+//        if ($type == "grass")
+//            $typeOfMiner = "miner3";
+//        $unitModel->resetGather($typeOfMiner, $user);
+//        return floor($reward_Item) . " " . $type . " received. " . floor($reward_golds) . " gold received.";
+//    }
+
+public  function collect(){
+            $user = \Illuminate\Support\Facades\Input::get("user");
+            $type = \Illuminate\Support\Facades\Input::get("type");
+    $unitModel = new User();
+    $units = $unitModel->getUnits($user);
+    if ($type == "rock")
+        $typeOfMiner = "miner1_box";
+
+    if ($type == "wood")
+        $typeOfMiner = "miner2_box";
+    if ($type == "grass")
+        $typeOfMiner = "miner3_box";
+
+    $qty = $units->$typeOfMiner;
+    $type_qty = $units->$type;
+
+
+$this->gainXp($qty,$user);
+   $unitModel->updateType($typeOfMiner, 0, $user);
+   $unitModel->updateType($type, $type_qty + $qty, $user);
+}
+
+    public function gainXp($xp,$user){
         $unitModel = new User();
         $units = $unitModel->getUnits($user);
-        $rock = $units->rocks;
-        $gold = $units->golds;
-        $chance = rand(1, 100) / 100;
-
-        $reward_rocks = $this->rocks * $chance;
-        $reward_golds = $this->golds * $chance;
-        $unitModel->updateType('rocks',floor($reward_rocks) + $rock, $user);
-        $unitModel->updateType('golds',floor($reward_golds) + $gold, $user);
-
-        $unitModel->resetMining($user);
-        return floor($reward_rocks) . " rock received. " . floor($reward_golds) . " gold received.";
+        $unitModel->updateType('xp', $xp + $units->xp, $user);
     }
 
     public function mine()
@@ -82,8 +115,27 @@ class unitsController extends Controller
         $coins = $unitModel->getCurrentCoins($user);
 
         if ($coins >= 100) {
-            $unitModel->updateType('coins',$coins - 100, $user);
+            $unitModel->updateType('coins', $coins - 100, $user);
             $unitModel->mining($user);
+        }
+    }
+
+    public function gather()
+    {
+        $user = \Illuminate\Support\Facades\Input::get("user");
+        $type = \Illuminate\Support\Facades\Input::get("type");
+        $unitModel = new User();
+        $coins = $unitModel->getCurrentCoins($user);
+
+        if ($coins >= 100) {
+            $unitModel->updateType('coin', $coins - 100, $user);
+            if ($type == "rock")
+                $type = "miner1";
+            if ($type == "wood")
+                $type = "miner2";
+            if ($type == "grass")
+                $type = "miner3";
+            $unitModel->gather($type, $user);
         }
     }
 
@@ -95,12 +147,12 @@ class unitsController extends Controller
         $qty = \Illuminate\Support\Facades\Input::get("qty");
         $trade = new trades();
         $coins = $unitModel->getCurrentCoins($user);
-        $cost = $trade->getBuy($type)*$qty;
+        $cost = $trade->getBuy($type) * $qty;
         $units = $unitModel->getUnits($user);
         $rock = $units->$type;
         if ($coins >= $cost) {
-            $unitModel->updateType('coins',$coins - $cost, $user);
-            $unitModel->updateType($type,$rock+$qty,$user);
+            $unitModel->updateType('coin', $coins - $cost, $user);
+            $unitModel->updateType($type, $rock + $qty, $user);
         }
     }
 
@@ -112,13 +164,13 @@ class unitsController extends Controller
         $qty = \Illuminate\Support\Facades\Input::get("qty");
         $trade = new trades();
         $coins = $unitModel->getCurrentCoins($user);
-        $cost = $trade->getSell($type)*$qty;
+        $cost = $trade->getSell($type) * $qty;
         $units = $unitModel->getUnits($user);
         $rock = $units->$type;
 
-        if($rock>=$qty){
-            $unitModel->updateType('coins',$coins + $cost, $user);
-            $unitModel->updateType($type,$rock-$qty,$user);
+        if ($rock >= $qty) {
+            $unitModel->updateType('coin', $coins + $cost, $user);
+            $unitModel->updateType($type, $rock - $qty, $user);
         }
     }
 
