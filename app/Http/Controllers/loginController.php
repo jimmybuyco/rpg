@@ -44,8 +44,8 @@ class loginController extends Controller
     }
 
 
-    public function error(){
+    public function logout(){
         Auth::logout();
-        return view('error');
+        return Redirect::to('login');
     }
 }

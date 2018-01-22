@@ -11,7 +11,7 @@
             <table border="1">
                 <tr>
                     <td>User Id</td>
-                    <td><input type="text" id="user" ></td>
+                    <td><input type="text" id="user" ><a href="logout">Logout</a> </td>
                 </tr>
                 <tr><td>Name</td><td><span id="name"></span></td></tr>
                 <tr><td>Level</td><td><span id="lv"></span></td></tr>

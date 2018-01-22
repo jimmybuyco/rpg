@@ -17,16 +17,16 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        return $next($request);
-//        if(Auth::check()){
+//        return $next($request);
+        if(Auth::check()){
 //            if (Auth::user()->id>0){
-//                return $next($request);
+                return $next($request);
 //            }else{
 //                return redirect('error');
 //            }
-//        }else{
-//            return redirect('error');
-//        }
+        }else{
+            return redirect('login');
+        }
 
 
 

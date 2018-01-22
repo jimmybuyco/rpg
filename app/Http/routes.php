@@ -12,7 +12,12 @@ use Illuminate\Support\Facades\Auth;
 | and give it the controller to call when that URI is requested.
 |
 */
-//Route::group(['middleware' => 'guest'], function() {
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header('Content-Type: text/html');
+
+Route::group(['middleware' => 'guest'], function() {
     Route::get('/', 'loginController@welcome');
     Route::get('stats','statsController@getStats');
     Route::get('mine','unitsController@mine');
@@ -24,10 +29,10 @@ use Illuminate\Support\Facades\Auth;
     Route::get('attack','combatController@attack');
     Route::get('useItem','itemController@useItem');
 
-//});
+});
 
 
 Route::get('login','loginController@login');
 Route::post('doLogin','loginController@doLogin');
-Route::get('error','loginController@error');
+Route::get('logout','loginController@logout');
 
