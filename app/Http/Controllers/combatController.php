@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-
+use App\stats;
+use Illuminate\Support\Facades\DB;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -16,14 +17,14 @@ class combatController extends Controller
     public function attack()
     {
 
-//        $user=Auth::user()->id;
-        $user=\Illuminate\Support\Facades\Input::get("user");
+        $user=Auth::user()->id;
+//        $user=\Illuminate\Support\Facades\Input::get("user");
         $def=\Illuminate\Support\Facades\Input::get("defender");
         $unitModel = new User();
 
 
 
-
+        $default_def=5;
         $attacker = $unitModel->getUnits($user);
 
         if($attacker->sp > 0){
@@ -38,24 +39,40 @@ class combatController extends Controller
 
                 if($splitAtk[$x]==1 && $splitDef[$x]==2)
                     $atk_dmg++;
-
-//                print_r("atk:".$splitAtk[$x].",def:".$splitDef[$x]      .  ",attaker:".$atk_dmg.",defender:".$def_dmg);
                 if($splitAtk[$x]==2 && $splitDef[$x]==3)
                     $atk_dmg++;
                 if($splitAtk[$x]==3 && $splitDef[$x]==1)
                     $atk_dmg++;
-//            if($splitAtk[$x]== $splitDef[$x]) {
-//                $atk_dmg++;
-//            }
-//            print_r($splitAtk[$x]." vs ".$splitDef[$x]);
             }
-            $def_dmg=5-$atk_dmg;
 
+            $checkAtk = DB::table('trades')->select(DB::raw('SUM(value) as ATK'))->where('lifespan','>',0)
+                ->where('attribute','ATK')->where('user',$user)->first();
+            $checkDef = DB::table('trades')->select(DB::raw('SUM(value) as DEF'))->where('lifespan','>',0)
+                ->where('attribute','DEF')->where('user',$def)->first();
 
+            $def_dmg=$default_def-$atk_dmg;
+            if($checkAtk){
+                $atk_dmg+=$checkAtk->ATK;
+            }
+            if($checkAtk){
+                $atk_dmg-=$checkDef->DEF;
+            }
+            $def_dmg=$def_dmg<0?0:$def_dmg;
             $this->gainXp($atk_dmg*5,$user);
             $this->gainXp($def_dmg*5,$def);
 
             $message = "You deal ".$atk_dmg." damage to ".$defender->name.". ".$defender->name." deals ".$def_dmg." to you.";
+            $stats = new stats();
+
+            if($defender->hp-$atk_dmg<1){
+                $status = $stats->getStats($user);
+                $stats->updateStats($user,'kill',$status->kill + 1);
+            }
+            if($attacker->hp-$def_dmg<1){
+                $status = $stats->getStats($def);
+                $stats->updateStats($def,'kill',$status->kill + 1);
+            }
+
 
             $unitModel->updateType('hp', ($defender->hp-$atk_dmg)<1?0:$defender->hp-$atk_dmg, $def);
             $unitModel->updateType('hp', ($attacker->hp-$def_dmg)<1?0:($attacker->hp-$def_dmg), $user);

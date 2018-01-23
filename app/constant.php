@@ -12,5 +12,5 @@ class constant extends Model
     public $wood=12;
     public $grass=15;
     public $gold=1;
-    public $coin=1000;
+    public $coin=0;
 }

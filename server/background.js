@@ -11,7 +11,7 @@ var con = mysql.createConnection({
 
 update();
 updatePerSecond();
-updateThird();
+// updateThird();
 
 function update() {
     con.connect(function(err) {
@@ -30,6 +30,12 @@ function update() {
         });
 
         sql="update users set sp_ctr = 60 where sp<5 and sp_ctr=-2;";
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            console.log("updated coins: ");
+        });
+
+        sql="update trades set lifespan = lifespan-1 where lifespan>0;";
         con.query(sql, function (err, result) {
             if (err) throw err;
             console.log("updated coins: ");

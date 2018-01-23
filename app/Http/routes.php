@@ -25,6 +25,7 @@ Route::group(['middleware' => 'guest'], function() {
     Route::get('levelUp','unitsController@levelUp');
     Route::get('attack','combatController@attack');
     Route::get('useItem','itemController@useItem');
+    Route::get('defChange','unitsController@defChange');
 
 });
 

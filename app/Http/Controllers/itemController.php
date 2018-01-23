@@ -9,15 +9,15 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Console\Input\Input;
-
+use Illuminate\Support\Facades\DB;
 
 class itemController extends Controller
 {
     public function useItem()
     {
 
-//        $user=Auth::user()->id;
-        $user=\Illuminate\Support\Facades\Input::get("user");
+        $user=Auth::user()->id;
+//        $user=\Illuminate\Support\Facades\Input::get("user");
         $type=\Illuminate\Support\Facades\Input::get("type");
         $unitModel = new User();
 
@@ -34,11 +34,61 @@ class itemController extends Controller
 
 
                 break;
-            case "Tue":
-                echo "Today is Tuesday. Buy some food.";
+            case "sword":
+                if ($user_units->gold >= 10) {
+
+
+                    $check = DB::table('trades')->where('name','sword')->where('user',$user)->first();
+                    if($check){
+                        if($check->lifespan==0){
+                            $val = array(
+                                'lifespan'=>600);
+                            DB::table('trades')->where('id',$check->id)->update($val);
+                            $unitModel->updateType('gold', $user_units->gold - 10, $user);
+                        }else{
+                        }
+                    }else{
+
+                        $val = array('user'=>$user,
+                            'name'=>'sword',
+                            'attribute'=>'ATK',
+                            'value'=>'2',
+                            'lifespan'=>600);
+
+                        $unitModel->updateType('gold', $user_units->gold - 10, $user);
+                        DB::table('trades')->insert($val);
+                    }
+
+                }
+
+
                 break;
-            case "Wed":
-                echo "Today is Wednesday. Visit a doctor.";
+            case "shield":
+                if ($user_units->gold >= 10) {
+
+
+                    $check = DB::table('trades')->where('name','shield')->where('user',$user)->first();
+                    if($check){
+                        if($check->lifespan==0){
+                            $val = array(
+                                'lifespan'=>600);
+                            DB::table('trades')->update($val)->where('id',$check->id);
+                            $unitModel->updateType('gold', $user_units->gold - 10, $user);
+                        }else{
+                        }
+                    }else{
+
+                        $val = array('user'=>$user,
+                            'name'=>'shield',
+                            'attribute'=>'DEF',
+                            'value'=>'2',
+                            'lifespan'=>600);
+
+                        $unitModel->updateType('gold', $user_units->gold - 10, $user);
+                        DB::table('trades')->insert($val);
+                    }
+
+                }
                 break;
             case "Thu":
                 echo "Today is Thursday. Repair your car.";

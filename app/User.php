@@ -38,8 +38,14 @@ class User extends Authenticatable
     }
 
     public function getRanking($user){
+       // ->select('name','xp','hp','id')
+        $results = DB::table('users')->select('name','xp','hp','id')->orderBy('xp','desc')->get();
+        return $results;
+    }
 
-        $results = DB::table('users')->orderBy('xp','desc')->get();
+    public function getItems($user){
+
+        $results = DB::table('trades')->where('user',$user)->where('lifespan','>',0)->get();
         return $results;
     }
 

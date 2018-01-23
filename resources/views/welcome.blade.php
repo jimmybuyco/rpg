@@ -10,7 +10,7 @@
 
 
     <div class="row">
-        <div class="col-md-3 row">
+        <div class="col-md-4 row">
             <table border="1">
                 <tr>
                     <td>User Id</td>
@@ -47,21 +47,26 @@
                 <tr>
                     <td>DEF</td>
                     <td>
-                        <img id="def1" class="def_img" src="">
-                        <img id="def2" class="def_img" src="">
-                        <img id="def3" class="def_img" src="">
-                        <img id="def4" class="def_img" src="">
-                        <img id="def5" class="def_img" src="">
+                        <button onclick="myFunction(0)"><img id="def1" class="def_img" src=""></button>
+                        <button onclick="myFunction(1)"><img id="def2" class="def_img" src=""></button>
+                            <button onclick="myFunction(2)"><img id="def3" class="def_img" src=""></button>
+                                <button onclick="myFunction(3)"><img id="def4" class="def_img" src=""></button>
+                                    <button onclick="myFunction(4)"><img id="def5" class="def_img" src=""></button>
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td></td>
+                    <td>items</td>
+                    <td><div id="items"></div></td>
+                </tr>
+                <tr>
+                    <td>Achievements</td>
+                    <td><div id="achive"></div></td>
                 </tr>
             </table>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-4  ">
+
             <table>
                 <tr>
                     <td>rock</td>
@@ -94,7 +99,7 @@
             </table>
 
         </div>
-        <div class="col-md-5 row">
+        <div class="col-md-4 row">
 
             <div class="col-md-4 box">
                 Rocks:
@@ -149,7 +154,7 @@
     {{--<br>--}}
     {{--DEF: <input type="text" id="def"><input type="button" value="+" onclick="levelUp('def')"><label id="req_def"></label>--}}
     {{--<br>--}}
-    <hr>
+
 
 
     {{--<input type="text"  id="qty_rocks" value="1"><input type="button" value="BUY(50)" onclick="buy('rock')"><input type="button" value="SELL(20)" onclick="sell('rock')">--}}
@@ -178,8 +183,22 @@
             <td>Potion</td>
             <td>+20 HP</td>
 
-            <td>100 coins. 30 Woods. 30 Grass</td>
+            <td>100 coins. 30 Woods. 30 Grass.</td>
             <td><input type="button" value="BUY" onclick="useItem('potion')"></td>
+        </tr>
+        <tr>
+            <td>Sword</td>
+            <td>+2 ATK</td>
+
+            <td>10 Gold.</td>
+            <td><input type="button" value="BUY" onclick="useItem('sword')"></td>
+        </tr>
+        <tr>
+            <td>Sheild</td>
+            <td>+2 DEF</td>
+
+            <td>10 Gold.</td>
+            <td><input type="button" value="BUY" onclick="useItem('shield')"></td>
         </tr>
     </table>
 
@@ -199,7 +218,17 @@
 
 
     <style>
+        .bordered_div{
+            border: 1px solid black;
+        }
         .def_img {
+            height: 40px;
+        }
+
+        #items img{
+            height: 40px;
+        }
+        #achive img{
             height: 40px;
         }
 
@@ -248,6 +277,26 @@
             update();
             $("#script").remove();
         });
+
+        function myFunction(id) {
+            var txt;
+            var def = prompt("Please enter value (1=scissor, 2=paper, 3=rock):", "");
+            if (def == 1 || def == 2 || def == 3) {
+                $.ajax({
+                    url: "defChange?user=" + $('#user').val()+"&index="+id+"&val="+def,
+                    async: false,
+                    type: 'get',
+                    success: function (data) {
+                        update();
+                    },
+                    error: function () {
+                    }
+                });
+            } else {
+                txt = "Wrong input.";
+            }
+            document.getElementById("demo").innerHTML = txt;
+        }
 
         function update() {
             $.ajax({
@@ -325,8 +374,35 @@
                     cell3.innerHTML = "LEVEL";
                     cell4.innerHTML = "HP";
                     cell5.innerHTML = "ACTION";
-
+                    $("#items").html('');
+                    $("#achive").html('');
 //                    console.clear();
+                    var items = data['items'];
+                    items.forEach(function (entry) {
+//                        $("#items").text("<img src='img/1.jpg'>");
+//                        document.getElementById("def" + ctr).src = "img/" + defence + ".jpg";
+
+                        var img=document.createElement("img");
+
+                        var lifespan = (entry['lifespan'] / 600) * 100;
+                        img.src="img/"+entry['name']+".jpg";
+                        img.title=entry['attribute']+"+"+entry['value']+" "+Math.floor(lifespan)+"%";
+
+                        var foo = document.getElementById("items");
+                        foo.appendChild(img);
+                    });
+
+                    var achive = data['achive'];
+                    achive.forEach(function (entry) {
+
+                        var img=document.createElement("img");
+                        img.src="img/"+entry['icon'];
+                        img.title=entry['title']+" - "+entry['desc'];
+
+                        var foo = document.getElementById("achive");
+                        foo.appendChild(img);
+                    });
+
 
                     rank.forEach(function (entry) {
 

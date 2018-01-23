@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
+use App\stats;
 use App\trades;
 use App\units;
 use App\User;
@@ -40,7 +41,8 @@ class unitsController extends Controller
 
     public function levelUp()
     {
-        $user = \Illuminate\Support\Facades\Input::get("user");
+//        $user = \Illuminate\Support\Facades\Input::get("user");
+        $user=Auth::user()->id;
         $type = \Illuminate\Support\Facades\Input::get("type");
         $unitsModel = new User();
         $units = $unitsModel->getUnits($user);
@@ -81,7 +83,9 @@ class unitsController extends Controller
 //    }
 
 public  function collect(){
-            $user = \Illuminate\Support\Facades\Input::get("user");
+//            $user = \Illuminate\Support\Facades\Input::get("user");
+
+    $user=Auth::user()->id;
             $type = \Illuminate\Support\Facades\Input::get("type");
     $unitModel = new User();
     $units = $unitModel->getUnits($user);
@@ -98,6 +102,13 @@ public  function collect(){
 
 
 //$this->gainXp($qty,$user);
+
+    $stats = new stats();
+    $status = $stats->getStats($user);
+    $stats->updateStats($user,$type,$status->$type + $qty);
+
+
+
    $unitModel->updateType($typeOfMiner, 0, $user);
    $unitModel->updateType($type, $type_qty + $qty, $user);
 }
@@ -108,9 +119,24 @@ public  function collect(){
         $unitModel->updateType('xp', $xp + $units->xp, $user);
     }
 
+    public function defChange(){
+        $user = Auth::user()->id;
+        $index = \Illuminate\Support\Facades\Input::get("index");
+        $val = \Illuminate\Support\Facades\Input::get("val");
+
+        $unitModel = new User();
+        $units = $unitModel->getUnits($user);
+        $defence =str_split($units->defence,1) ;
+        $defence[$index]=$val;
+        $unitModel = new User();
+        $units = $unitModel->getUnits($user);
+        $unitModel->updateType('defence', implode('',$defence), $user);
+    }
+
     public function mine()
     {
-        $user = \Illuminate\Support\Facades\Input::get("user");
+//        $user = \Illuminate\Support\Facades\Input::get("user");
+        $user=Auth::user()->id;
         $unitModel = new User();
         $coins = $unitModel->getCurrentCoins($user);
 
@@ -122,7 +148,8 @@ public  function collect(){
 
     public function gather()
     {
-        $user = \Illuminate\Support\Facades\Input::get("user");
+//        $user = \Illuminate\Support\Facades\Input::get("user");
+        $user=Auth::user()->id;
         $type = \Illuminate\Support\Facades\Input::get("type");
         $unitModel = new User();
         $coins = $unitModel->getCurrentCoins($user);
@@ -142,12 +169,17 @@ public  function collect(){
     public function buy()
     {
         $unitModel = new User();
-        $user = \Illuminate\Support\Facades\Input::get("user");
+//        $user = \Illuminate\Support\Facades\Input::get("user");
+        $user=Auth::user()->id;
         $type = \Illuminate\Support\Facades\Input::get("type");
         $qty = \Illuminate\Support\Facades\Input::get("qty");
         $trade = new trades();
         $coins = $unitModel->getCurrentCoins($user);
-        $cost = $trade->getBuy($type) * $qty;
+        if($type=='gold'){
+            $cost = 1000 * $qty;
+        }
+        else
+        $cost = 50 * $qty;
         $units = $unitModel->getUnits($user);
         $rock = $units->$type;
         if ($coins >= $cost) {
@@ -159,12 +191,16 @@ public  function collect(){
     public function sell()
     {
         $unitModel = new User();
-        $user = \Illuminate\Support\Facades\Input::get("user");
+//        $user = \Illuminate\Support\Facades\Input::get("user");
+        $user=Auth::user()->id;
         $type = \Illuminate\Support\Facades\Input::get("type");
         $qty = \Illuminate\Support\Facades\Input::get("qty");
         $trade = new trades();
         $coins = $unitModel->getCurrentCoins($user);
-        $cost = $trade->getSell($type) * $qty;
+        if($type=='gold'){
+            $cost = 500 * $qty;
+        }else
+        $cost = 20 * $qty;
         $units = $unitModel->getUnits($user);
         $rock = $units->$type;
 
