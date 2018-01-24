@@ -12,17 +12,7 @@ use Illuminate\Support\Facades\DB;
 class loginController extends Controller
 {
     public function login(){
-
-//        $users=array('id'=>1,'password'=>'asdf');
-//        if (Auth::attempt($users)) {
-////            return "a";
-//        $user = User::find(1);
-//        Auth::login($user);
         return view('login');
-//        }else{
-//            return Redirect::to('error');
-//        }
-
     }
 
     public function welcome(){

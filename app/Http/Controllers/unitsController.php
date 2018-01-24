@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Auth;
 use App\stats;
 use App\trades;
@@ -42,18 +43,18 @@ class unitsController extends Controller
     public function levelUp()
     {
 //        $user = \Illuminate\Support\Facades\Input::get("user");
-        $user=Auth::user()->id;
+        $user = Auth::user()->id;
         $type = \Illuminate\Support\Facades\Input::get("type");
         $unitsModel = new User();
         $units = $unitsModel->getUnits($user);
-        $minerLevel = $units->$type/10;
+        $minerLevel = $units->$type / 10;
 
-        $req_coin = $minerLevel*1000;
+        $req_coin = $minerLevel * 1000;
 
 
-        if($units->coin >= $req_coin){
-            $unitsModel->updateType('coin',$units->coin - $req_coin, $user);
-            $unitsModel->updateType($type,$units->$type+10, $user);
+        if ($units->coin >= $req_coin) {
+            $unitsModel->updateType('coin', $units->coin - $req_coin, $user);
+            $unitsModel->updateType($type, $units->$type + 10, $user);
         }
 
 
@@ -82,61 +83,64 @@ class unitsController extends Controller
 //        return floor($reward_Item) . " " . $type . " received. " . floor($reward_golds) . " gold received.";
 //    }
 
-public  function collect(){
+    public function collect()
+    {
 //            $user = \Illuminate\Support\Facades\Input::get("user");
 
-    $user=Auth::user()->id;
-            $type = \Illuminate\Support\Facades\Input::get("type");
-    $unitModel = new User();
-    $units = $unitModel->getUnits($user);
-    if ($type == "rock")
-        $typeOfMiner = "miner1_box";
+        $user = Auth::user()->id;
+        $type = \Illuminate\Support\Facades\Input::get("type");
+        $unitModel = new User();
+        $units = $unitModel->getUnits($user);
+        if ($type == "rock")
+            $typeOfMiner = "miner1_box";
 
-    if ($type == "wood")
-        $typeOfMiner = "miner2_box";
-    if ($type == "grass")
-        $typeOfMiner = "miner3_box";
+        if ($type == "wood")
+            $typeOfMiner = "miner2_box";
+        if ($type == "grass")
+            $typeOfMiner = "miner3_box";
 
-    $qty = $units->$typeOfMiner;
-    $type_qty = $units->$type;
+        $qty = $units->$typeOfMiner;
+        $type_qty = $units->$type;
 
 
 //$this->gainXp($qty,$user);
 
-    $stats = new stats();
-    $status = $stats->getStats($user);
-    $stats->updateStats($user,$type,$status->$type + $qty);
+        $stats = new stats();
+        $status = $stats->getStats($user);
+        $stats->updateStats($user, $type, $status->$type + $qty);
 
 
+        $unitModel->updateType($typeOfMiner, 0, $user);
+        $unitModel->updateType($type, $type_qty + $qty, $user);
+    }
 
-   $unitModel->updateType($typeOfMiner, 0, $user);
-   $unitModel->updateType($type, $type_qty + $qty, $user);
-}
-
-    public function gainXp($xp,$user){
+    public function gainXp($xp, $user)
+    {
         $unitModel = new User();
         $units = $unitModel->getUnits($user);
         $unitModel->updateType('xp', $xp + $units->xp, $user);
     }
 
-    public function defChange(){
+    public function defChange()
+    {
         $user = Auth::user()->id;
         $index = \Illuminate\Support\Facades\Input::get("index");
         $val = \Illuminate\Support\Facades\Input::get("val");
+        if($val>0 && $val<4 && $index<5){
+            $unitModel = new User();
+            $units = $unitModel->getUnits($user);
+            $defence = str_split($units->defence, 1);
+            $defence[$index] = $val;
+            $unitModel = new User();
+            $unitModel->updateType('defence', implode('', $defence), $user);
+        }
 
-        $unitModel = new User();
-        $units = $unitModel->getUnits($user);
-        $defence =str_split($units->defence,1) ;
-        $defence[$index]=$val;
-        $unitModel = new User();
-        $units = $unitModel->getUnits($user);
-        $unitModel->updateType('defence', implode('',$defence), $user);
     }
 
     public function mine()
     {
 //        $user = \Illuminate\Support\Facades\Input::get("user");
-        $user=Auth::user()->id;
+        $user = Auth::user()->id;
         $unitModel = new User();
         $coins = $unitModel->getCurrentCoins($user);
 
@@ -149,7 +153,7 @@ public  function collect(){
     public function gather()
     {
 //        $user = \Illuminate\Support\Facades\Input::get("user");
-        $user=Auth::user()->id;
+        $user = Auth::user()->id;
         $type = \Illuminate\Support\Facades\Input::get("type");
         $unitModel = new User();
         $coins = $unitModel->getCurrentCoins($user);
@@ -170,16 +174,15 @@ public  function collect(){
     {
         $unitModel = new User();
 //        $user = \Illuminate\Support\Facades\Input::get("user");
-        $user=Auth::user()->id;
+        $user = Auth::user()->id;
         $type = \Illuminate\Support\Facades\Input::get("type");
         $qty = \Illuminate\Support\Facades\Input::get("qty");
         $trade = new trades();
         $coins = $unitModel->getCurrentCoins($user);
-        if($type=='gold'){
+        if ($type == 'gold') {
             $cost = 1000 * $qty;
-        }
-        else
-        $cost = 50 * $qty;
+        } else
+            $cost = 50 * $qty;
         $units = $unitModel->getUnits($user);
         $rock = $units->$type;
         if ($coins >= $cost) {
@@ -192,15 +195,15 @@ public  function collect(){
     {
         $unitModel = new User();
 //        $user = \Illuminate\Support\Facades\Input::get("user");
-        $user=Auth::user()->id;
+        $user = Auth::user()->id;
         $type = \Illuminate\Support\Facades\Input::get("type");
         $qty = \Illuminate\Support\Facades\Input::get("qty");
         $trade = new trades();
         $coins = $unitModel->getCurrentCoins($user);
-        if($type=='gold'){
+        if ($type == 'gold') {
             $cost = 500 * $qty;
-        }else
-        $cost = 20 * $qty;
+        } else
+            $cost = 20 * $qty;
         $units = $unitModel->getUnits($user);
         $rock = $units->$type;
 

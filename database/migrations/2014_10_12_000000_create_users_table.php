@@ -33,6 +33,8 @@ class CreateUsersTable extends Migration
             $table->integer('miner2_box');
             $table->integer('miner3');
             $table->integer('miner3_box');
+            $table->integer('last_msg');
+            $table->integer('bot');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -63,6 +65,7 @@ class CreateUsersTable extends Migration
         $unitsModel->grass = 0;
         $unitsModel->gold = 0;
         $unitsModel->xp = 0;
+        $unitsModel->last_msg = 0;
         $unitsModel->save();
 
         $unitsModel = new \App\User();
@@ -84,6 +87,7 @@ class CreateUsersTable extends Migration
         $unitsModel->grass = 0;
         $unitsModel->gold = 0;
         $unitsModel->xp = 0;
+        $unitsModel->last_msg = 0;
         $unitsModel->save();
 
         $unitsModel = new \App\User();
@@ -105,6 +109,7 @@ class CreateUsersTable extends Migration
         $unitsModel->grass = 0;
         $unitsModel->gold = 0;
         $unitsModel->xp = 0;
+        $unitsModel->last_msg = 0;
         $unitsModel->save();
 
         $unitsModel = new \App\User();
@@ -126,6 +131,7 @@ class CreateUsersTable extends Migration
         $unitsModel->grass = 0;
         $unitsModel->gold = 0;
         $unitsModel->xp = 0;
+        $unitsModel->last_msg = 0;
         $unitsModel->save();
     }
 

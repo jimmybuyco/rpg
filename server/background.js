@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 var interval = 1000;
 var interval2 = 5000;
-var interval3 = 600000;
+var interval3 = 900000;
 var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -11,7 +11,7 @@ var con = mysql.createConnection({
 
 update();
 updatePerSecond();
-// updateThird();
+updateThird();
 
 function update() {
     con.connect(function(err) {
@@ -47,19 +47,19 @@ function update() {
 
 function updatePerSecond() {
     con.connect(function(err) {
-        sql="update users set miner1_box=miner1_box+1 where miner1 >miner1_box;";
+        sql="update users set miner1_box= IF(miner1_box+(miner1/50)<miner1,miner1_box+(miner1/50),miner1) where miner1 > miner1_box;";
         con.query(sql, function (err, result) {
             if (err) throw err;
             console.log("updated miner1");
         });
 
-        sql="update users set miner2_box=miner2_box+1 where miner2 > miner2_box;";
+        sql="update users set miner2_box= IF(miner2_box+(miner2/50)<miner2,miner2_box+(miner2/50),miner2) where miner2 > miner2_box;";
         con.query(sql, function (err, result) {
             if (err) throw err;
             console.log("updated miner2");
         });
 
-        sql="update users set miner3_box=miner3_box+1 where miner3 > miner3_box;";
+        sql="update users set miner3_box= IF(miner3_box+(miner3/50)<miner3,miner3_box+(miner3/50),miner3) where miner3 > miner3_box;";
         con.query(sql, function (err, result) {
             if (err) throw err;
             console.log("updated miner3");
@@ -73,16 +73,21 @@ function updateThird() {
 
 
     con.connect(function(err) {
-        sql="select id from users;";
+        sql="select id from users where bot =1 ;";
         con.query(sql, function (err, result) {
             if (err) throw err;
             result.forEach(function (entry) {
                 var def = getRandom();
-                // console.log(entry["id"]);
                 sql2="update users set defence="+def+" where id ="+entry["id"]+" ;";
                 con.query(sql2, function (err, results) {
                     if (err) throw err;
                     console.log("updated defence for "+entry["id"]);
+                });
+
+                sql2="update users set hp=100 where id ="+entry["id"]+" ;";
+                con.query(sql2, function (err, results) {
+                    if (err) throw err;
+                    console.log("updated life for "+entry["id"]);
                 });
             });
         });

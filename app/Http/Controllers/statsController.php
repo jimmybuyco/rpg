@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\messageboard;
 use Illuminate\Support\Facades\DB;
 use App\achivements;
 use App\stats;
@@ -17,16 +18,10 @@ class statsController extends Controller
 {
     public function getStats()
     {
-
         $user = Auth::user()->id;
-//        $user=\Illuminate\Support\Facades\Input::get("user");
         $unitModel = new User();
-        $units = new unitsController();
-        //$miners = $unitModel->geMinersCount($user);
         $unit_counts = $unitModel->getUnits($user);
         $coins = $unit_counts->coin;
-        // $coins = $units->updateCoins($miners, $coins, $user);
-
         $rock = $unit_counts->rock;
         $wood = $unit_counts->wood;
         $grass = $unit_counts->grass;
@@ -51,15 +46,9 @@ class statsController extends Controller
         $level = floor($exp / 1800) + 1;
         $exp = $exp % 1800;
 
-//        if ($miners1 == -1) {
-//            $message = $units->getMineRewards("rock",$user);
-//        }
-//        if ($miners2 == -1) {
-//            $message = $units->getMineRewards("wood",$user);
-//        }
-//        if ($miners3 == -1) {
-//            $message = $units->getMineRewards("grass",$user);
-//        }
+
+        $msg = new messageboard();
+
         $data = array(
             'id' => $user,
             'coins' => $coins,
@@ -81,9 +70,10 @@ class statsController extends Controller
             'ranking' => $ranking,
             'achive' => $achive,
             'items' => $items,
-            'message' => $message,
+            'message' => $msg->getMessageBoard(),
             'xp' => $exp,
-            'level' => $level
+            'level' => $level,
+
         );
         return $data;
     }
@@ -102,8 +92,6 @@ class statsController extends Controller
 
         $user_stats = $stats->getStats($user);
         $list = $achive->achivementsList($user);
-//        print_r($list);
-//        exit();
         foreach ($list as $e) {
             switch ($e->title) {
                 case "First Blood":
